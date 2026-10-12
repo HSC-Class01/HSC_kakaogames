@@ -1,170 +1,58 @@
-# Samsung Electronics DART Financial Analysis Agent
+[![🔗 대시보드 바로가기](https://img.shields.io/badge/%F0%9F%94%97-%EB%8C%80%EC%8B%9C%EB%B3%B4%EB%93%9C_%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-2463eb?style=for-the-badge)](https://ghkdtpcks00-ux.github.io/townboy/)
 
-삼성전자(005930)의 DART 정기보고서(사업보고서·반기보고서·분기보고서)를 OpenDART API로 수집하고, 핵심 재무수치·재무비율을 계산해 GitHub Pages 대시보드로 공개하는 자동화 프로젝트입니다.
+> **업로드:** ZIP 안의 `.github` 폴더는 GitHub Actions가 반드시 요구하는 경로입니다. 압축파일에는 숨김 속성 파일이 없지만, 이름이 점으로 시작하는 `.github` 디렉터리는 필수입니다. 웹 업로드에서 폴더가 누락된다면 GitHub 웹 편집기로 `.github/workflows/update.yml`과 `pages.yml`을 각각 생성하세요.
 
-> **중요:** OpenDART의 `fnlttSinglAcntAll`/`fnlttSinglAcnt` 재무정보 API는 공식 가이드상 **2015년 이후 데이터만 제공**합니다. 따라서 2010~2014년은 이 API만으로 자동 재무수치 수집이 불가능합니다. 프로젝트는 `START_YEAR=2010`으로 설정되어 있으며, 2010~2014는 `legacy_status.csv`에 제한사항을 기록하고, 필요하면 DART 원문 자료를 별도 보강할 수 있게 설계했습니다. citeturn1search1turn1search2
+[![🔗 대시보드 바로가기](https://img.shields.io/badge/%F0%9F%94%97-%EB%8C%80%EC%8B%9C%EB%B3%B4%EB%93%9C_%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-2563eb?style=for-the-badge)](https://ghkdtpcks00-ux.github.io/townboy/)
 
-## 🔗 대시보드 바로가기
+# 카카오게임즈 OpenDART 재무분석 Agent
 
-[![대시보드 바로가기](https://img.shields.io/badge/🔗%20대시보드%20바로가기-000000?style=for-the-badge&logo=github&logoColor=white)](https://hsc-class01.github.io/HSC_samsung/)
+**대시보드:** https://ghkdtpcks00-ux.github.io/townboy/
 
-## Dashboard
+## 설치 및 배포
+1. ZIP을 압축 해제한 뒤 **내부 파일과 폴더**를 GitHub 저장소 `ghkdtpcks00-ux/townboy`의 `main` 브랜치 루트에 업로드합니다.
+2. ZIP의 `github/workflows` 디렉터리를 GitHub 웹사이트에서 **`.github/workflows`**로 이동하거나 이름을 바꾸세요. 숨김 파일 없는 ZIP 요청 때문에 워크플로우는 `github/workflows`에 제공됩니다. GitHub Actions 실행에는 반드시 `.github/workflows` 경로가 필요합니다.
+3. GitHub 저장소 Settings → Secrets and variables → Actions → New repository secret에서 이름 `DART_API_KEY`로 OpenDART API 키를 입력합니다. **코드나 README에 키를 넣지 마세요.**
+4. Settings → Actions → General → Workflow permissions에서 **Read and write permissions**를 선택합니다. 조직 정책이 이를 막으면 별도 PAT 기반 인증 설정이 필요합니다.
+5. Settings → Pages → Build and deployment → Source에서 **GitHub Actions**를 선택합니다.
+6. Actions → Update DART financial data → Run workflow를 먼저 실행합니다. 데이터 수집이 완료되면 commit/push에 따라 Pages가 배포됩니다. 필요시 Deploy dashboard 워크플로우도 수동 실행합니다.
+7. 저장소 오른쪽 **About → 톱니바퀴 → Website**에 `https://ghkdtpcks00-ux.github.io/townboy/`를 입력하고 저장합니다. 이는 저장소 관리자가 수동으로 설정해야 합니다.
 
-https://hsc-class01.github.io/HSC_samsung/
+## 업데이트
+- 매월 1일 **09:15 KST** (00:15 UTC) GitHub Actions 실행. GitHub 스케줄은 혼잡 시 지연될 수 있습니다.
+- 사업보고서 FY(11011), 반기 H1(11012), 1분기 Q1(11013), 3분기 Q3(11014) 수집.
+- 연결(CFS) 우선, 없으면 별도(OFS). 2010년부터 조회하며 미공시 연도는 생략.
+- 원본: `data/raw`, 정규화 결과: `data/processed/financials.json`.
+- 손익은 누적 공시 금액입니다. Quarterly 표는 Q1/Q3 보고서 데이터이며 **Q2/Q4 단독분기 자료가 아닙니다.**
+- 재무비율은 단순 산식이며 회계정책·업종 차이와 누적 기간에 주의하세요.
 
-## 구조
+## 국내 Peer Firms
+| 기업 | 종목코드 | 비교 사업 |
+|---|---|---|
+| 크래프톤 | 259960 | 글로벌 게임 개발·퍼블리싱 |
+| 넷마블 | 251270 | 모바일 게임 퍼블리싱 |
+| 엔씨소프트 | 036570 | MMORPG 개발·서비스 |
+| 펄어비스 | 263750 | PC·콘솔 게임 개발 |
+| 위메이드 | 112040 | MMORPG·IP 사업 |
+| 네오위즈 | 095660 | PC·콘솔·모바일 게임 |
+| 컴투스 | 078340 | 모바일 게임 개발·퍼블리싱 |
 
-```text
-HSC_samsung/
-├─ src/
-│  └─ opendart_agent.py       # OpenDART 수집/정규화/비율 계산
-├─ docs/
-│  └─ index.html               # GitHub Pages 대시보드
-├─ data/
-│  ├─ financials.csv           # 핵심 재무수치
-│  ├─ ratios.csv               # 재무비율
-│  ├─ filings.csv              # 정기보고서 메타데이터
-│  ├─ legacy_status.csv        # 2010~2014 제한사항
-│  └─ peers.csv                # 국내 peer firms
-├─ raw/
-│  └─ .gitkeep (zip에는 포함하지 않음)
-├─ config/
-│  └─ settings.json
-├─ github_workflows/
-│  ├─ monthly_update.yml       # .github/workflows/ 로 복사
-│  └─ pages_deploy.yml         # .github/workflows/ 로 복사
-├─ tests/
-│  └─ test_agent.py
-├─ requirements.txt
-└─ README.md
-```
+## 유의사항
+- 이 ZIP은 **실행용 소스코드**이며 API 키가 없으므로 실제 공시 데이터는 아직 포함하지 않습니다.
+- 첨부 재무비율 가이드와 배지 이미지는 이 대화에서 확인되지 않아 표준 지표 및 shields.io 배지로 구성했습니다.
+- GitHub 저장소의 실제 설정 변경이나 배포 완료는 이 ZIP만으로 자동 수행되지 않습니다.
 
-## 1. OpenDART API 설정
 
-OpenDART 개발가이드에서 API 인증키를 발급합니다.
+## 첨부 실무가이드 반영 내용
+재무상태표·손익계산서·현금흐름표 핵심 수치, 수익성(매출총이익률/영업이익률/순이익률/ROA/ROE), 유동성·안정성(유동/당좌/부채/자기자본/차입금의존도/이자보상배율), 성장성·활동성(매출성장률/총자산회전율/DSO/DIO), FCF·순차입금을 포함합니다. 연간·반기·분기 각각 범주별 테이블을 제공합니다.
 
-- OpenDART: https://opendart.fss.or.kr/
-- 기업개황 API: 삼성전자 고유번호는 공식 가이드 예시에 `00126380`으로 제시되어 있습니다. citeturn1search6
-- 단일회사 전체 재무제표 API: `fnlttSinglAcntAll.json` citeturn1search1
-- 공시서류 원본파일 API: `document.xml` citeturn1search0
+**자료 부족 시 결측:** EBITDA/EBITDA 마진/ROIC/순차입금 대비 EBITDA, DPO/CCC, PER/PBR/EV·EBITDA/FCF 수익률은 감가상각·외상매입액·주가/주식수 등 검증된 추가 자료가 없으면 계산하지 않습니다. 이자부차입금은 단기·장기차입금 부분합으로 리스부채/사채가 빠질 수 있습니다. CAPEX는 유형·무형자산 취득액이 모두 확인될 때만 산출합니다. ROE/ROA/회전율은 동일 연결/별도 기준의 전년말·당기말 평균 잔액을 사용하고 반기/분기는 연환산 참고치입니다. 손익 및 현금흐름 분기 값은 누적 금액입니다.
 
-### GitHub Secret
+## 최초 실행
+1. 저장소에 파일 업로드 (`.github/workflows/` 경로 필수)
+2. Settings → Secrets and variables → Actions → New repository secret: `DART_API_KEY`
+3. Settings → Pages → Source: GitHub Actions
+4. Actions → Update DART financial data → Run workflow
+5. Settings 또는 About → Website에 `https://ghkdtpcks00-ux.github.io/townboy/` 등록 (About 설정은 수동)
+6. 자동 업데이트: 매월 1일 한국시간 09:15 (UTC 00:15); GitHub 예약 작업은 지연될 수 있음
 
-Repository → **Settings → Secrets and variables → Actions → New repository secret**
-
-```text
-Name: DART_API_KEY
-Value: 발급받은 40자리 OpenDART API 인증키
-```
-
-API 키를 코드나 README에 직접 입력하지 마세요.
-
-## 2. 첫 실행
-
-로컬 테스트:
-
-```bash
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-
-pip install -r requirements.txt
-
-# Windows PowerShell
-$env:DART_API_KEY="YOUR_KEY"
-
-# macOS/Linux
-export DART_API_KEY="YOUR_KEY"
-
-python opendart_agent.py
-```
-
-## 3. 매월 1일 자동 업데이트
-
-GitHub Actions의 `schedule`은 POSIX cron을 사용하고 기본적으로 UTC 기준입니다. citeturn0search0turn0search1
-
-실제 자동 실행 workflow는 `0 0 1 * *`(UTC)로 설정되어 있으며, 한국시간 매월 1일 오전 9시에 실행됩니다.
-
-zip 파일에는 숨김 경로를 넣지 않기 위해 workflow를 `github_workflows/`에 넣었습니다. 압축을 푼 뒤 아래처럼 복사하세요.
-
-```text
-github_workflows/monthly_update.yml
-→ .github/workflows/monthly_update.yml
-
-github_workflows/pages_deploy.yml
-→ .github/workflows/pages_deploy.yml
-```
-
-## 4. GitHub Pages 배포
-
-Repository → **Settings → Pages → Source: GitHub Actions** 로 설정합니다.
-
-`monthly_update.yml`은 데이터 수집 후 저장소 루트의 `index.html`과 `data/`를 GitHub Pages에 배포합니다.
-
-예상 대시보드 주소:
-
-```text
-https://hsc-class01.github.io/HSC_samsung/
-```
-
-Repository의 오른쪽 **About → Website**에는 위 주소를 넣어 주세요.
-
-## 5. 수집 범위
-
-- 사업보고서: `11011`
-- 반기보고서: `11012`
-- 1분기보고서: `11013`
-- 3분기보고서: `11014`
-
-OpenDART 공식 API가 위 보고서 코드를 사용합니다. citeturn1search1
-
-### 주요 재무수치
-
-실무 가이드에 따라 다음 범주를 저장합니다.
-
-- 재무상태: 총자산, 현금및현금성자산, 매출채권, 재고자산, 유형자산, 총부채, 이자부차입금, 자본총계
-- 손익: 매출액, 매출총이익, 판매비와관리비, 영업이익, 세전이익, 당기순이익, 지배주주순이익, EBITDA
-- 현금흐름: 영업활동현금흐름(CFO), 투자활동현금흐름, 재무활동현금흐름, CAPEX, FCF, 순차입금
-- 비율: 매출총이익률, 영업이익률, 순이익률, EBITDA 마진, ROA, ROE, ROIC, 유동비율, 당좌비율, 부채비율, 자기자본비율, 차입금의존도, 이자보상배율, 순차입금/EBITDA, 총자산회전율, DSO, DIO, DPO, CCC, 매출증가율, CFO/순이익
-
-이 항목은 첨부된 `재무제표_재무비율_실무가이드.docx`의 핵심 수치와 비율을 기준으로 구성했습니다. fileciteturn3file0L53-L88 fileciteturn3file0L90-L151 fileciteturn3file0L153-L228
-
-## 6. 연결재무제표 기준
-
-기본값은 `CFS`(연결)입니다. OpenDART는 `fs_div`에 `OFS`(별도)와 `CFS`(연결)를 사용합니다. citeturn1search1
-
-## 7. 2010~2014 데이터
-
-OpenDART 재무정보 API의 공식 제공 범위가 2015년 이후이므로 2010~2014는 자동 재무수치 테이블에 임의의 값을 넣지 않습니다. 이 기간은 `legacy_status.csv`에 `API_UNAVAILABLE_PRE_2015`로 표시합니다. citeturn1search1turn1search2
-
-원문 공시를 추가 확보한 경우에는 `raw/legacy/`에 저장하고 별도 parser를 연결할 수 있습니다. OpenDART의 원본파일 API는 접수번호(`rcept_no`)를 받아 ZIP 원문을 제공합니다. citeturn1search0
-
-## 8. 국내 Peer Firms
-
-대시보드와 README에는 국내 IT/전자·반도체 대형주 비교군으로 다음 기업을 기본 등록합니다.
-
-- SK하이닉스
-- LG전자
-- 삼성SDI
-- LG디스플레이
-- 삼성전기
-- LG이노텍
-
-Peer는 업종·사업구조가 완전히 동일하다는 뜻이 아니라, 삼성전자와 국내 IT 대형주/반도체·전자 공급망의 실적 및 재무 비교에 활용할 수 있는 비교군이라는 의미입니다. 공개 리서치의 국내 IT 대형주 비교표에서도 삼성전자, LG전자, LG디스플레이, 삼성SDI, SK하이닉스, 삼성전기, LG이노텍 등이 함께 비교된 사례가 있습니다. citeturn5search24turn5search23
-
-## 9. GitHub About 링크
-
-GitHub repository 오른쪽 About → Website에 다음 주소를 입력합니다.
-
-```text
-https://hsc-class01.github.io/HSC_samsung/
-```
-
-## 10. 보안 주의
-
-- `DART_API_KEY`는 GitHub Secret으로만 저장
-- `.env`, API key가 들어간 파일, 개인 토큰을 commit하지 않음
-- 원본 DART 파일은 필요 시 `raw/`에 저장하되 저장소 용량을 확인
-- zip 패키지에는 `.git`, `.github`, `.env`, `__pycache__` 등 hidden/system files를 포함하지 않음
+**주의:** ZIP은 소스코드이며 API 키를 포함하지 않습니다. 실제 데이터 수집/배포는 사용자의 저장소에서 최초 실행 후 확인하세요.
