@@ -10,7 +10,7 @@ def get(endpoint,params):
    if j.get('status')=='013':return None
    if j.get('status')!='000':raise RuntimeError(f'{endpoint}: {j.get("status")} {j.get("message")}')
    return j
-  except (requests.RequestException,RuntimeError):
+  except requests.RequestException:
    if attempt==3:raise
    time.sleep(2**attempt)
 def number(v):
