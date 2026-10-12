@@ -66,7 +66,8 @@ def main():
     sj,ids,names=spec
     for typ,values in [('account_id',ids),('account_nm',names)]:
      for v in values:
-      matches=[x for x in items if x.get('sj_div')==sj and x.get(typ)==v and x.get('account_detail','-') in ('-','')]
+      allowed_sj={'IS','CIS'} if sj=='IS' else {sj}
+      matches=[x for x in items if x.get('sj_div') in allowed_sj and x.get(typ)==v and x.get('account_detail','-') in ('-','')]
       for x in matches:
        n=number(x.get('thstrm_amount'))
        if n is not None:return n
