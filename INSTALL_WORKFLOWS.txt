@@ -1,0 +1,1 @@
+GitHub 웹에서 workflows/update.yml 내용을 .github/workflows/update.yml 파일로, workflows/pages.yml 내용을 .github/workflows/pages.yml 파일로 각각 생성하세요. 숨김 파일 없이 배포하기 위한 절차입니다.
