@@ -71,6 +71,33 @@ jobs:
           else
             echo "No data changes."
           fi
+      - name: Build clean agent ZIP (no hidden paths)
+        run: |
+          rm -rf package dist
+          mkdir -p package/scripts package/docs package/workflows dist
+          cp scripts/update.py package/scripts/update.py
+          cp docs/index.html package/docs/index.html
+          cp README.md package/README.md
+          cp requirements.txt package/requirements.txt
+          cp test_agent.py package/test_agent.py
+          cp .github/workflows/monthly_update.yml package/workflows/monthly_update.yml
+          cp data/processed/financials.json package/financials-latest.json
+          (cd package && zip -r ../dist/HSC_kakaogames_agent.zip .)
+          python - <<'PY'
+          import zipfile
+          p = "dist/HSC_kakaogames_agent.zip"
+          with zipfile.ZipFile(p) as z:
+              names = z.namelist()
+              assert names and all(not n.startswith(".") and "/." not in n for n in names), names
+              print(f"clean ZIP validated: {len(names)} files")
+          PY
+      - name: Upload clean agent ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: HSC_kakaogames-agent-clean-zip
+          path: dist/HSC_kakaogames_agent.zip
+          if-no-files-found: error
+          retention-days: 90
       - name: Prepare Pages artifact
         run: |
           rm -rf site
