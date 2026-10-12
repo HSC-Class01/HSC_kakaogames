@@ -24,7 +24,7 @@ const pct=v=>v==null?'—':fmt(Number(v)*100,1)+'%';
 const won=v=>v==null?'—':fmt(Number(v)/1e9,1)+' bn';
 let financials=[],ratios=[],peers=[];
 async function load(){
-  const [f,r,p]=await Promise.all([fetch('../data/financials.csv').then(x=>x.text()),fetch('../data/ratios.csv').then(x=>x.text()),fetch('../data/peers.csv').then(x=>x.text())]);
+  const [f,r,p]=await Promise.all([fetch('./data/financials.csv').then(x=>x.text()),fetch('./data/ratios.csv').then(x=>x.text()),fetch('./peers.csv').then(x=>x.text())]);
   financials=parseCSV(f); ratios=parseCSV(r); peers=parseCSV(p); render();
 }
 function parseCSV(text){const rows=text.trim().split(/\r?\n/).filter(Boolean).map(x=>x.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(v=>v.replace(/^\"|\"$/g,'')));if(!rows.length)return[];const h=rows.shift();return rows.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]??''])))}
