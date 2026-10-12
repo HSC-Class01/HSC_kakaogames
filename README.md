@@ -78,14 +78,14 @@ $env:DART_API_KEY="YOUR_KEY"
 # macOS/Linux
 export DART_API_KEY="YOUR_KEY"
 
-python src/opendart_agent.py
+python opendart_agent.py
 ```
 
 ## 3. 매월 1일 자동 업데이트
 
 GitHub Actions의 `schedule`은 POSIX cron을 사용하고 기본적으로 UTC 기준입니다. citeturn0search0turn0search1
 
-기본 workflow는 한국시간 매월 1일 오전 6시(UTC 21:00 전날)에 실행하도록 `0 21 1 * *`을 사용합니다. 정각 부하를 피하기 위해 00분 대신 21시 UTC를 사용했습니다.
+실제 자동 실행 workflow는 `0 0 1 * *`(UTC)로 설정되어 있으며, 한국시간 매월 1일 오전 9시에 실행됩니다.
 
 zip 파일에는 숨김 경로를 넣지 않기 위해 workflow를 `github_workflows/`에 넣었습니다. 압축을 푼 뒤 아래처럼 복사하세요.
 
@@ -101,7 +101,7 @@ github_workflows/pages_deploy.yml
 
 Repository → **Settings → Pages → Source: GitHub Actions** 로 설정합니다.
 
-`pages_deploy.yml`은 `docs/`를 Pages artifact로 배포합니다.
+`monthly_update.yml`은 데이터 수집 후 저장소 루트의 `index.html`과 `data/`를 GitHub Pages에 배포합니다.
 
 예상 대시보드 주소:
 
