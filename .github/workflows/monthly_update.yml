@@ -10,6 +10,7 @@ on:
       - "scripts/**"
       - "docs/**"
       - "README.md"
+      - "test_agent.py"
       - ".github/workflows/monthly_update.yml"
 
 permissions:
@@ -19,7 +20,7 @@ permissions:
 
 concurrency:
   group: kakaogames-pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   update-and-deploy:
