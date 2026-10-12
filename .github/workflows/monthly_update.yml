@@ -41,7 +41,9 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Validate collector syntax
-        run: python -m py_compile scripts/update.py
+        run: python -m py_compile scripts/update.py test_agent.py
+      - name: Run smoke tests
+        run: python -m unittest test_agent.py
       - name: Collect DART financial statements and calculate ratios
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
