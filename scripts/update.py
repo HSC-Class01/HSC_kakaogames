@@ -74,9 +74,9 @@ def main():
    row={'year':year,'period':period,'scope':scope,'cumulative':period!='FY'}
    row.update({key:find(spec) for key,spec in specs.items()})
    if row['gross_profit'] is None and row['revenue'] is not None and row['cost_of_sales'] is not None:row['gross_profit']=row['revenue']-row['cost_of_sales']
-   row['capex']=sum([row['purchase_ppe'],row['purchase_intangibles']]) if None not in (row['purchase_ppe'],row['purchase_intangibles']) else None
+   capex_parts=[v for v in (row['purchase_ppe'],row['purchase_intangibles']) if v is not None]\n   row['capex']=sum(capex_parts) if capex_parts else None
    row['fcf']=row['operating_cash_flow']-row['capex'] if None not in (row['operating_cash_flow'],row['capex']) else None
-   row['interest_bearing_debt']=row['short_borrowings']+row['long_borrowings'] if None not in (row['short_borrowings'],row['long_borrowings']) else None
+   debt_parts=[v for v in (row['short_borrowings'],row['long_borrowings']) if v is not None]\n   row['interest_bearing_debt']=sum(debt_parts) if debt_parts else None
    row['net_debt']=row['interest_bearing_debt']-row['cash'] if None not in (row['interest_bearing_debt'],row['cash']) else None
    for target,num,den in [('gross_margin','gross_profit','revenue'),('operating_margin','operating_income','revenue'),('net_margin','net_income','revenue'),('current_ratio','current_assets','current_liabilities'),('debt_ratio','liabilities','equity'),('equity_ratio','equity','assets'),('borrowing_dependence','interest_bearing_debt','assets')]:
     row[target]=divide(row[num],row[den],True) if den!='equity' or row['equity'] is not None and row['equity']>0 else None
