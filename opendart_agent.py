@@ -12,14 +12,16 @@ from typing import Dict, Iterable, List, Optional
 import pandas as pd
 import requests
 
-ROOT = Path(__file__).resolve().parents[1]
-CONFIG_PATH = ROOT / "config" / "settings.json"
+ROOT = Path(__file__).resolve().parent
+CONFIG_PATH = ROOT / "settings.json"
 DATA_DIR = ROOT / "data"
 RAW_DIR = ROOT / "raw"
 BASE_URL = "https://opendart.fss.or.kr/api"
 
 ACCOUNT_ALIASES = {
     "total_assets": ["자산총계", "총자산"],
+    "current_assets": ["유동자산"],
+    "current_liabilities": ["유동부채"],
     "cash": ["현금및현금성자산", "현금 및 현금성자산"],
     "receivables": ["매출채권", "매출채권및기타채권", "매출채권 및 기타채권"],
     "inventory": ["재고자산"],
@@ -195,6 +197,8 @@ def safe_div(a, b):
 
 def calculate_ratios(df: pd.DataFrame) -> pd.DataFrame:
     df = df.sort_values(["year", "report_type"]).copy()
+    df["interest_bearing_debt"] = pd.to_numeric(df.get("interest_bearing_debt"), errors="coerce")
+    df["cash"] = pd.to_numeric(df.get("cash"), errors="coerce")
     df["net_debt"] = df["interest_bearing_debt"] - df["cash"]
     df["ebitda"] = df["operating_income"]
     # EBITDA is calculated as EBIT + depreciation/amortization when available.
@@ -204,7 +208,7 @@ def calculate_ratios(df: pd.DataFrame) -> pd.DataFrame:
     df["operating_margin"] = df.apply(lambda r: safe_div(r.operating_income, r.revenue), axis=1)
     df["net_margin"] = df.apply(lambda r: safe_div(r.net_income, r.revenue), axis=1)
     df["ebitda_margin"] = df.apply(lambda r: safe_div(r.ebitda, r.revenue), axis=1)
-    df["current_ratio"] = df.apply(lambda r: safe_div(r.current_assets, r.current_liabilities) if "current_assets" in df else None, axis=1)
+    df["current_ratio"] = df.apply(lambda r: safe_div(r.get("current_assets"), r.get("current_liabilities")), axis=1)
     df["debt_ratio"] = df.apply(lambda r: safe_div(r.total_liabilities, r.equity), axis=1)
     df["equity_ratio"] = df.apply(lambda r: safe_div(r.equity, r.total_assets), axis=1)
     df["debt_dependency"] = df.apply(lambda r: safe_div(r.interest_bearing_debt, r.total_assets), axis=1)
@@ -212,7 +216,7 @@ def calculate_ratios(df: pd.DataFrame) -> pd.DataFrame:
     df["net_debt_to_ebitda"] = df.apply(lambda r: safe_div(r.net_debt, r.ebitda), axis=1)
     df["asset_turnover"] = df.apply(lambda r: safe_div(r.revenue, r.total_assets), axis=1)
     df["cfo_to_net_income"] = df.apply(lambda r: safe_div(r.cfo, r.net_income), axis=1)
-    df["fcf"] = df["cfo"] - df["capex"].abs()
+    df["fcf"] = pd.to_numeric(df["cfo"], errors="coerce") - pd.to_numeric(df["capex"], errors="coerce").abs()
     df["revenue_growth"] = df.groupby("report_type")["revenue"].pct_change()
     return df
 
